@@ -46,7 +46,7 @@ public class SimpleServlet extends SlingSafeMethodsServlet {
     protected void doGet(final SlingHttpServletRequest req,
             final SlingHttpServletResponse resp) throws ServletException, IOException {
     	try {
-			if( service.getUserResourceResolver() ){
+			if( service.updateNode() ){
 				resp.getOutputStream().print("node is updated");
 			}
 			else

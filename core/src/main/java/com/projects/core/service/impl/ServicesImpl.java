@@ -28,7 +28,7 @@ public class ServicesImpl implements ServicesInte {
 	private final String RESOURCE_NODE = "/content/content/en/jcr:content";
 
 	@Override
-	public boolean getUserResourceResolver() throws org.apache.sling.api.resource.LoginException, PersistenceException {
+	public boolean updateNode() throws org.apache.sling.api.resource.LoginException, PersistenceException {
 		Resource res = resourceNode.getResource(RESOURCE_NODE);
 		ResourceResolver resolver = res.getResourceResolver();
 		try {
