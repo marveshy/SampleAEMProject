@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?><metatype:MetaData xmlns:metatype="http://www.osgi.org/xmlns/metatype/v1.0.0" localization="OSGI-INF/metatype/com.projects.core.schedulers.SimpleScheduledTask">
+    <OCD id="com.projects.core.schedulers.SimpleScheduledTask" name="%com.projects.core.schedulers.SimpleScheduledTask.name" description="%com.projects.core.schedulers.SimpleScheduledTask.description">
+        <AD id="scheduler.period" type="Long" default="10" name="%com.projects.core.schedulers.SimpleScheduledTask.scheduler.period.name" description="%com.projects.core.schedulers.SimpleScheduledTask.scheduler.period.description"/>
+    </OCD>
+    <Designate pid="com.projects.core.schedulers.SimpleScheduledTask">
+        <Object ocdref="com.projects.core.schedulers.SimpleScheduledTask"/>
+    </Designate>
+</metatype:MetaData>

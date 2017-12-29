@@ -1,0 +1,10 @@
+com\projects\core\servlets\SimpleServlet.class
+com\projects\core\listeners\SimpleResourceListener.class
+com\projects\core\util\inte\ResourceNode.class
+com\projects\core\util\ResourceNodeImpl.class
+com\projects\core\listeners\ResourceListnerOnNodeUpdated.class
+com\projects\core\service\impl\ServicesImpl.class
+com\projects\core\package-info.class
+com\projects\core\filters\LoggingFilter.class
+com\projects\core\schedulers\SimpleScheduledTask.class
+com\projects\core\serviceInte\ServicesInte.class
