@@ -1,5 +1,7 @@
+com\projects\core\schedulers\UserTasks.class
 com\projects\core\servlets\SimpleServlet.class
 com\projects\core\listeners\SimpleResourceListener.class
+com\projects\core\schedulers\UserTasksInte.class
 com\projects\core\util\inte\ResourceNode.class
 com\projects\core\util\ResourceNodeImpl.class
 com\projects\core\listeners\ResourceListnerOnNodeUpdated.class

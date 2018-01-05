@@ -7,6 +7,7 @@ import java.util.Date;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
+import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
@@ -26,6 +27,7 @@ public class ServicesImpl implements ServicesInte {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	private final String RESOURCE_NODE = "/content/content/en/jcr:content";
+	private final String USER_PATH = "/home/users/chanverse/";
 
 	@Override
 	public boolean updateNode() throws org.apache.sling.api.resource.LoginException, PersistenceException {
@@ -61,4 +63,20 @@ public class ServicesImpl implements ServicesInte {
 		return false;
 	}
 
+	@Override
+	public void UpdateUserNodeOnFirstLogin(String idCurrentUser) throws LoginException {
+		ModifiableValueMap modMap = resourceNode.getModifiableValueMap(USER_PATH+idCurrentUser);
+		if(modMap!=null){
+			
+		}
+
+	}
+	
+	@Override
+	public String idPath(String currentUser){
+		
+		return null ;
+	}
+
+	
 }

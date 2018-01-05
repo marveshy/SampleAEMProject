@@ -16,6 +16,8 @@
 package com.projects.core.listeners;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
@@ -35,13 +37,18 @@ import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.LoginException;
+import org.apache.sling.api.resource.PersistenceException;
+import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.jcr.api.SlingRepository;
+import org.apache.sling.jcr.base.util.AccessControlUtil;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.projects.core.util.inte.ResourceNode;
 
 /**
  * A service to demonstrate how changes in the resource tree
@@ -73,14 +80,17 @@ public class SimpleResourceListener implements EventListener {
 	private final String PATH = "/home/users/chanverse";
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
-	 @Reference
-	 ResourceResolverFactory resolverFactory;
-	 
+	@Reference
+	ResourceResolverFactory resolverFactory;
+
 	@Reference
 	private SlingRepository repository;
 
 	private BundleContext bundleContext;
-	private Session session;
+	
+
+	@Reference
+	private ResourceNode resourceNode;
 
 	private ObservationManager observationManager;
 
@@ -91,9 +101,12 @@ public class SimpleResourceListener implements EventListener {
 	protected void activate(ComponentContext ctx) {
 		this.bundleContext = ctx.getBundleContext();
 		try {
-			session = repository.loginAdministrative(null);
-			observationManager = session.getWorkspace().getObservationManager();			
-			observationManager.addEventListener(this, Event. NODE_ADDED, PATH, true, null, null, false);
+			
+		//	Resource res = resourceNode.getResource(PATH);
+		//	ResourceResolver adminResolver = res.getResourceResolver();
+			Session session =repository.loginAdministrative(null); // adminResolver.adaptTo(Session.class); // 
+			observationManager = session.getWorkspace().getObservationManager();
+			observationManager.addEventListener(this, Event.NODE_ADDED, PATH, true, null, null, false);
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("activate catch" + e.getMessage());
@@ -102,23 +115,35 @@ public class SimpleResourceListener implements EventListener {
 
 	@Override
 	public void onEvent(EventIterator events) {
-		 ResourceResolver adminResolver = null;
-		  Session adminSession=null;
-		  try {
-		    adminResolver = resolverFactory.getAdministrativeResourceResolver(null);
-		    adminSession = adminResolver.adaptTo(Session.class);
-			final UserManager userManager= adminResolver.adaptTo(UserManager.class);
+		Session session = null;
+	    ResourceResolver resourceResolver = null;
+	    try {
+		 Map<String, Object> param = new HashMap<String, Object>();
+	        param.put(ResourceResolverFactory.SUBSERVICE, "userAccessService");
+	        resourceResolver = resolverFactory.getServiceResourceResolver(param);
+	        session = resourceResolver.adaptTo(Session.class);
+	        // Create UserManager Object
+	        final UserManager userManager = AccessControlUtil.getUserManager(session);
+			//final UserManager userManager = adminResolver.adaptTo(UserManager.class);
 			log.info("A new node was added to /home/chanverse ");
 			Event event = (Event) events.nextEvent();
-			Node node = session.getNode(event.getPath());		
-			String authorizableId = String.valueOf(node.getProperty(AUTHORIZABLE_ID).getValue());	
-			Group group = (Group)(userManager.getAuthorizable(GROUPE_NAME));
-			if(group!=null && userManager.getAuthorizable(authorizableId) !=null){
-				group.addMember(userManager.getAuthorizable(authorizableId));
-				adminSession.save();
-			}	
+			Node node = session.getNode(event.getPath());
+			log.info("node.getPath()  " ,node.getPath());
+			log.info("node.getName() " ,node.getName());
+			
+			String authorizableId = String.valueOf(node.getProperty(AUTHORIZABLE_ID).getValue());
+			Group group = (Group) (userManager.getAuthorizable(GROUPE_NAME));
+			if (group != null && userManager.getAuthorizable(authorizableId) != null) {
+				group.addMember(userManager.getAuthorizable(authorizableId));				
+				
+				log.info("AEM User successfully created..");
+			}
+			
+			if (session != null && session.isLive())
+				session.logout();
 
-		
+			
+
 		} catch (PathNotFoundException e) {
 			e.printStackTrace();
 			log.info("path not found" + e.getMessage());
@@ -128,18 +153,10 @@ public class SimpleResourceListener implements EventListener {
 		} catch (LoginException e) {
 			e.printStackTrace();
 			// TODO Auto-generated catch block
-			log.info("LoginException " +e.getMessage());
-		}
-		  finally {
-			  if (session != null && session.isLive()) 
-		            session.logout();	        
+			log.info("LoginException " + e.getMessage());
+		}  finally {
 
-	          if (adminResolver != null) 
-	              adminResolver.close();
-	          
-		         log.info("AEM User successfully created.."); 
-		                 
-		  }
+		}
 
 	}
 }

@@ -7,6 +7,7 @@ import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.LoginException;
+import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
@@ -32,5 +33,22 @@ public class ResourceNodeImpl implements ResourceNode {
 		resolver = resolverFactory.getServiceResourceResolver(param);
 		return resolver.getResource(path);
 
+	}
+	public ModifiableValueMap getModifiableValueMap(String ressource) throws LoginException {
+		Resource res = getResource(ressource);
+		ResourceResolver resolver = res.getResourceResolver();
+		try {
+
+			if (res != null) {
+				// Create a node that represents the root node
+				return  res.adaptTo(ModifiableValueMap.class);
+			}
+			
+				}
+		finally {
+			if (resolver != null && resolver.isLive())
+				resolver.close();
+		}
+		return null;
 	}
 }
