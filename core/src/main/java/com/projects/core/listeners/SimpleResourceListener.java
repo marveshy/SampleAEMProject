@@ -87,7 +87,6 @@ public class SimpleResourceListener implements EventListener {
 	private SlingRepository repository;
 
 	private BundleContext bundleContext;
-	
 
 	@Reference
 	private ResourceNode resourceNode;
@@ -101,10 +100,11 @@ public class SimpleResourceListener implements EventListener {
 	protected void activate(ComponentContext ctx) {
 		this.bundleContext = ctx.getBundleContext();
 		try {
-			
-		//	Resource res = resourceNode.getResource(PATH);
-		//	ResourceResolver adminResolver = res.getResourceResolver();
-			Session session =repository.loginAdministrative(null); // adminResolver.adaptTo(Session.class); // 
+
+			// Resource res = resourceNode.getResource(PATH);
+			// ResourceResolver adminResolver = res.getResourceResolver();
+			Session session = repository.loginAdministrative(null); // adminResolver.adaptTo(Session.class);
+																	// //
 			observationManager = session.getWorkspace().getObservationManager();
 			observationManager.addEventListener(this, Event.NODE_ADDED, PATH, true, null, null, false);
 		} catch (Exception e) {
@@ -115,47 +115,43 @@ public class SimpleResourceListener implements EventListener {
 
 	@Override
 	public void onEvent(EventIterator events) {
-		Session session = null;
-	    ResourceResolver resourceResolver = null;
-	    try {
-		 Map<String, Object> param = new HashMap<String, Object>();
-	        param.put(ResourceResolverFactory.SUBSERVICE, "userAccessService");
-	        resourceResolver = resolverFactory.getServiceResourceResolver(param);
-	        session = resourceResolver.adaptTo(Session.class);
-	        // Create UserManager Object
-	        final UserManager userManager = AccessControlUtil.getUserManager(session);
-			//final UserManager userManager = adminResolver.adaptTo(UserManager.class);
+		ResourceResolver adminResolver = null;
+		Session adminSession = null;
+
+		try {
+			adminResolver = resolverFactory.getAdministrativeResourceResolver(null); // @Deprecated
+			adminSession = adminResolver.adaptTo(Session.class);
+			final UserManager userManager = adminResolver.adaptTo(UserManager.class);
 			log.info("A new node was added to /home/chanverse ");
 			Event event = (Event) events.nextEvent();
-			Node node = session.getNode(event.getPath());
-			log.info("node.getPath()  " ,node.getPath());
-			log.info("node.getName() " ,node.getName());
-			
-			String authorizableId = String.valueOf(node.getProperty(AUTHORIZABLE_ID).getValue());
-			Group group = (Group) (userManager.getAuthorizable(GROUPE_NAME));
-			if (group != null && userManager.getAuthorizable(authorizableId) != null) {
-				group.addMember(userManager.getAuthorizable(authorizableId));				
-				
-				log.info("AEM User successfully created..");
-			}
-			
-			if (session != null && session.isLive())
-				session.logout();
+			Node node = adminSession.getNode(event.getPath());
+			log.info("node.getPath()  " + node.getPath());
+			log.info("node.getName() " + node.getName());
+			if (String.valueOf(node.getProperty(AUTHORIZABLE_ID).getValue()) != null) {
+				String authorizableId = String.valueOf(node.getProperty(AUTHORIZABLE_ID).getValue());
 
-			
+				Group group = (Group) (userManager.getAuthorizable(GROUPE_NAME));
+				if (group != null && userManager.getAuthorizable(authorizableId) != null) {
+					group.addMember(userManager.getAuthorizable(authorizableId));
+					adminSession.save();
+					log.info("AEM User successfully created..");
+				}
+
+			}
 
 		} catch (PathNotFoundException e) {
-			e.printStackTrace();
+
 			log.info("path not found" + e.getMessage());
 		} catch (RepositoryException e) {
-			e.printStackTrace();
+
 			log.info("repository not found" + e.getMessage());
 		} catch (LoginException e) {
-			e.printStackTrace();
+
 			// TODO Auto-generated catch block
 			log.info("LoginException " + e.getMessage());
-		}  finally {
-
+		} finally {
+			if (adminSession != null && adminSession.isLive())
+				adminSession.logout();
 		}
 
 	}

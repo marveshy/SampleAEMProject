@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1515171519671
+Bnd-LastModified: 1515776072559
 Build-Jdk: 1.8.0_144
 Built-By: mohammed
 Bundle-Description: Core bundle for projects
@@ -27,9 +27,8 @@ Import-Package: com.day.cq.search;version="[1.1,2)",com.day.cq.search.re
  2.3,3)",org.apache.sling.api;version="[2.3,3)",org.apache.sling.api.req
  uest;version="[2.4,3)",org.apache.sling.api.resource;version="[2.5,3)",
  org.apache.sling.api.servlets;version="[2.1,3)",org.apache.sling.jcr.ap
- i;version="[2.2,3)",org.apache.sling.jcr.base.util;version="[2.1,3)",or
- g.osgi.framework;version="[1.5,2)",org.osgi.service.component;version="
- [1.1,2)",org.slf4j;version="[1.5,2)"
+ i;version="[2.2,3)",org.osgi.framework;version="[1.5,2)",org.osgi.servi
+ ce.component;version="[1.1,2)",org.slf4j;version="[1.5,2)"
 Provide-Capability: osgi.service;effective:=active;objectClass="java.lan
  g.Runnable";scheduler.period=10;scheduler.concurrent=false;service.vend
  or=Adobe,osgi.service;effective:=active;objectClass="javax.servlet.Serv
